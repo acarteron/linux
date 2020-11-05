@@ -20,7 +20,7 @@
 };
 
 &panel {
-	compatible = "leadtek,ltk035c5444t-spi";
+	compatible = "wisecoco,jt035ips02";
 	spi-max-frequency = <15000000>;
 };
 
