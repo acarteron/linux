@@ -96,6 +96,7 @@
 			"Speaker Amp INR", "ROUT",
 			"Speaker", "Speaker Amp OUTL",
 			"Speaker", "Speaker Amp OUTR",
+			"FM Radio", "Cap-less",
 			"LLINEIN", "FM Radio",
 			"RLINEIN", "FM Radio",
 			"Built-in Mic", "MICBIAS",
