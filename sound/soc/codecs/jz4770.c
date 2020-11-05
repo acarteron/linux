@@ -98,7 +98,7 @@ enum {
 #define REG_CR_HP_MUTE			BIT(7)
 #define REG_CR_HP_LOAD			BIT(6)
 #define REG_CR_HP_SB_OFFSET		4
-#define REG_CR_HP_SB_HPCM		BIT(3)
+#define REG_CR_HP_SB_HPCM_OFFSET	3
 #define REG_CR_HP_SEL_OFFSET		0
 #define REG_CR_HP_SEL_MASK		(0x3 << REG_CR_HP_SEL_OFFSET)
 
@@ -190,6 +190,9 @@ static int jz4770_codec_set_bias_level(struct snd_soc_component *codec,
 
 	switch (level) {
 	case SND_SOC_BIAS_PREPARE:
+		/* Reset all interrupt flags. */
+		regmap_write(regmap, JZ4770_CODEC_REG_IFR, REG_IFR_ALL_MASK);
+
 		regmap_clear_bits(regmap, JZ4770_CODEC_REG_CR_VIC,
 				  REG_CR_VIC_SB);
 		msleep(250);
@@ -284,7 +287,7 @@ static int jz4770_codec_mute_stream(struct snd_soc_dai *dai, int mute, int direc
 		err = regmap_read_poll_timeout(jz_codec->regmap,
 					       JZ4770_CODEC_REG_IFR,
 					       val, val & gain_bit,
-					       1000, 100 * USEC_PER_MSEC);
+					       1000, 1 * USEC_PER_SEC);
 		if (err) {
 			dev_err(jz_codec->dev,
 				"Timeout while setting digital mute: %d", err);
@@ -368,9 +371,9 @@ static int hpout_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
-		/* set cap-less, unmute HP */
+		/* unmute HP */
 		regmap_clear_bits(jz_codec->regmap, JZ4770_CODEC_REG_CR_HP,
-				  REG_CR_HP_SB_HPCM | REG_CR_HP_MUTE);
+				  REG_CR_HP_MUTE);
 		break;
 
 	case SND_SOC_DAPM_POST_PMU:
@@ -378,7 +381,7 @@ static int hpout_event(struct snd_soc_dapm_widget *w,
 		err = regmap_read_poll_timeout(jz_codec->regmap,
 					       JZ4770_CODEC_REG_IFR,
 					       val, val & REG_IFR_RUP,
-					       1000, 100 * USEC_PER_MSEC);
+					       1000, 1 * USEC_PER_SEC);
 		if (err) {
 			dev_err(jz_codec->dev, "RUP timeout: %d", err);
 			return err;
@@ -391,14 +394,14 @@ static int hpout_event(struct snd_soc_dapm_widget *w,
 		break;
 
 	case SND_SOC_DAPM_POST_PMD:
-		/* set cap-couple, mute HP */
+		/* mute HP */
 		regmap_set_bits(jz_codec->regmap, JZ4770_CODEC_REG_CR_HP,
-				REG_CR_HP_SB_HPCM | REG_CR_HP_MUTE);
+				REG_CR_HP_MUTE);
 
 		err = regmap_read_poll_timeout(jz_codec->regmap,
 					       JZ4770_CODEC_REG_IFR,
 					       val, val & REG_IFR_RDO,
-					       1000, 100 * USEC_PER_MSEC);
+					       1000, 1 * USEC_PER_SEC);
 		if (err) {
 			dev_err(jz_codec->dev, "RDO timeout: %d", err);
 			return err;
@@ -515,6 +518,9 @@ static const struct snd_soc_dapm_widget jz4770_codec_dapm_widgets[] = {
 
 	SND_SOC_DAPM_SUPPLY("MICBIAS", JZ4770_CODEC_REG_CR_MIC,
 			    REG_CR_MIC_BIAS_SB_OFFSET, 1, NULL, 0),
+
+	SND_SOC_DAPM_SUPPLY("Cap-less", JZ4770_CODEC_REG_CR_HP,
+			    REG_CR_HP_SB_HPCM_OFFSET, 1, NULL, 0),
 
 	SND_SOC_DAPM_INPUT("MIC1P"),
 	SND_SOC_DAPM_INPUT("MIC1N"),
@@ -637,14 +643,12 @@ static void jz4770_codec_codec_init_regs(struct snd_soc_component *codec)
 	regmap_set_bits(regmap, JZ4770_CODEC_REG_CR_ADC, REG_CR_ADC_LRSWAP);
 
 	/* default to cap-less mode(0) */
-	regmap_clear_bits(regmap, JZ4770_CODEC_REG_CR_HP, REG_CR_HP_SB_HPCM);
+	regmap_clear_bits(regmap, JZ4770_CODEC_REG_CR_HP,
+			  BIT(REG_CR_HP_SB_HPCM_OFFSET));
 
 	/* Send collected updates. */
 	regcache_cache_only(regmap, false);
 	regcache_sync(regmap);
-
-	/* Reset all interrupt flags. */
-	regmap_write(regmap, JZ4770_CODEC_REG_IFR, REG_IFR_ALL_MASK);
 }
 
 static int jz4770_codec_codec_probe(struct snd_soc_component *codec)
@@ -803,7 +807,7 @@ static int jz4770_codec_io_wait(struct jz_codec *codec)
 
 	return readl_poll_timeout(codec->base + ICDC_RGADW_OFFSET, reg,
 				  !(reg & ICDC_RGADW_RGWR),
-				  1000, 10 * USEC_PER_MSEC);
+				  1000, 1 * USEC_PER_SEC);
 }
 
 static int jz4770_codec_reg_read(void *context, unsigned int reg,
