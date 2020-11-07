@@ -51,7 +51,7 @@
  * @bpc: Bits per color.
  * @size: Structure containing the physical size of this panel.
  * @delay: Structure containing various delay values for this panel.
-* @bus_format: See MEDIA_BUS_FMT_... defines.
+ * @bus_format: See MEDIA_BUS_FMT_... defines.
  * @bus_flags: See DRM_BUS_FLAG_... defines.
  */
 struct panel_desc {
@@ -583,39 +583,39 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 		WARN_ON((desc->bus_format == MEDIA_BUS_FMT_RGB888_1X7X4_SPWG ||
 			 desc->bus_format == MEDIA_BUS_FMT_RGB888_1X7X4_JEIDA) &&
 			desc->bpc != 8);
-	/* 	break; */
-	/* case DRM_MODE_CONNECTOR_eDP: */
-	/* 	if (desc->bus_format == 0) */
-	/* 		dev_warn(dev, "Specify missing bus_format\n"); */
-	/* 	if (desc->bpc != 6 && desc->bpc != 8) */
-	/* 		dev_warn(dev, "Expected bpc in {6,8} but got: %u\n", desc->bpc); */
-	/* 	break; */
-	/* case DRM_MODE_CONNECTOR_DSI: */
-	/* 	if (desc->bpc != 6 && desc->bpc != 8) */
-	/* 		dev_warn(dev, "Expected bpc in {6,8} but got: %u\n", desc->bpc); */
-	/* 	break; */
-	/* case DRM_MODE_CONNECTOR_DPI: */
-	/* 	bus_flags = DRM_BUS_FLAG_DE_LOW | */
-	/* 		    DRM_BUS_FLAG_DE_HIGH | */
-	/* 		    DRM_BUS_FLAG_PIXDATA_SAMPLE_POSEDGE | */
-	/* 		    DRM_BUS_FLAG_PIXDATA_SAMPLE_NEGEDGE | */
-	/* 		    DRM_BUS_FLAG_DATA_MSB_TO_LSB | */
-	/* 		    DRM_BUS_FLAG_DATA_LSB_TO_MSB | */
-	/* 		    DRM_BUS_FLAG_SYNC_SAMPLE_POSEDGE | */
-	/* 		    DRM_BUS_FLAG_SYNC_SAMPLE_NEGEDGE; */
-	/* 	if (desc->bus_flags & ~bus_flags) */
-	/* 		dev_warn(dev, "Unexpected bus_flags(%d)\n", desc->bus_flags & ~bus_flags); */
-	/* 	if (!(desc->bus_flags & bus_flags)) */
-	/* 		dev_warn(dev, "Specify missing bus_flags\n"); */
-	/* 	if (desc->bus_format == 0) */
-	/* 		dev_warn(dev, "Specify missing bus_format\n"); */
-	/* 	if (desc->bpc != 6 && desc->bpc != 8) */
-	/* 		dev_warn(dev, "Expected bpc in {6,8} but got: %u\n", desc->bpc); */
-	/* 	break; */
-	/* default: */
-	/* 	dev_warn(dev, "Specify a valid connector_type: %d\n", desc->connector_type); */
-	/* 	connector_type = DRM_MODE_CONNECTOR_DPI; */
-	/* 	break; */
+		break;
+	case DRM_MODE_CONNECTOR_eDP:
+		if (desc->bus_format == 0)
+			dev_warn(dev, "Specify missing bus_format\n");
+		if (desc->bpc != 6 && desc->bpc != 8)
+			dev_warn(dev, "Expected bpc in {6,8} but got: %u\n", desc->bpc);
+		break;
+	case DRM_MODE_CONNECTOR_DSI:
+		if (desc->bpc != 6 && desc->bpc != 8)
+			dev_warn(dev, "Expected bpc in {6,8} but got: %u\n", desc->bpc);
+		break;
+	case DRM_MODE_CONNECTOR_DPI:
+		bus_flags = DRM_BUS_FLAG_DE_LOW |
+			    DRM_BUS_FLAG_DE_HIGH |
+			    DRM_BUS_FLAG_PIXDATA_SAMPLE_POSEDGE |
+			    DRM_BUS_FLAG_PIXDATA_SAMPLE_NEGEDGE |
+			    DRM_BUS_FLAG_DATA_MSB_TO_LSB |
+			    DRM_BUS_FLAG_DATA_LSB_TO_MSB |
+			    DRM_BUS_FLAG_SYNC_SAMPLE_POSEDGE |
+			    DRM_BUS_FLAG_SYNC_SAMPLE_NEGEDGE;
+		if (desc->bus_flags & ~bus_flags)
+			dev_warn(dev, "Unexpected bus_flags(%d)\n", desc->bus_flags & ~bus_flags);
+		if (!(desc->bus_flags & bus_flags))
+			dev_warn(dev, "Specify missing bus_flags\n");
+		if (desc->bus_format == 0)
+			dev_warn(dev, "Specify missing bus_format\n");
+		if (desc->bpc != 6 && desc->bpc != 8)
+			dev_warn(dev, "Expected bpc in {6,8} but got: %u\n", desc->bpc);
+		break;
+	default:
+		dev_warn(dev, "Specify a valid connector_type: %d\n", desc->connector_type);
+		connector_type = DRM_MODE_CONNECTOR_DPI;
+		break;
 	}
 
 	drm_panel_init(&panel->base, dev, &panel_simple_funcs, connector_type);
@@ -1916,45 +1916,45 @@ static const struct panel_desc frida_frd350h54004 = {
 	.connector_type = DRM_MODE_CONNECTOR_DPI,
 };
 
-static const struct drm_display_mode wisecoco_jt035ips02_modes[] = {                                                
-        { /* 60 Hz */                                                                                               
-               .clock = 36000,                                                                                      
-               .hdisplay = 640,                                                                                     
-               .hsync_start = 640 + 42,                                                                             
-               .hsync_end = 640 + 42 + 104,                                                                         
-               .htotal = 640 + 42 + 104 + 174,                                                                      
-               .vdisplay = 480,                                                                                     
-               .vsync_start = 480 + 16,                                                                             
-               .vsync_end = 480 + 16 + 14,                                                                          
-               .vtotal = 480 + 16 + 14 + 115,                                                                       
-               //.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,                                              
-       },                                                                                                           
-        { /* 50 Hz */                                                                                               
-               .clock = 5400,                                                                                       
-               .hdisplay = 640,                                                                                     
-               .hsync_start = 640 + 42,                                                                             
-               .hsync_end = 640 + 42 + 44,                                                                          
-               .htotal = 640 + 42 + 44 + 74,                                                                        
-               .vdisplay = 480,                                                                                     
-               .vsync_start = 480 + 16,                                                                             
-               .vsync_end = 480 + 16 + 14,                                                                          
-               .vtotal = 480 + 16 + 14 + 30,                                                                        
-               //.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,                                              
-       },                                                                                                           
+static const struct drm_display_mode wisecoco_jt035ips02_modes[] = {
+        { /* 60 Hz */
+               .clock = 36000,
+               .hdisplay = 640,
+               .hsync_start = 640 + 42,
+               .hsync_end = 640 + 42 + 104,
+               .htotal = 640 + 42 + 104 + 174,
+               .vdisplay = 480,
+               .vsync_start = 480 + 16,
+               .vsync_end = 480 + 16 + 14,
+               .vtotal = 480 + 16 + 14 + 115,
+               //.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
+       },
+        { /* 50 Hz */
+               .clock = 5400,
+               .hdisplay = 640,
+               .hsync_start = 640 + 42,
+               .hsync_end = 640 + 42 + 44,
+               .htotal = 640 + 42 + 44 + 74,
+               .vdisplay = 480,
+               .vsync_start = 480 + 16,
+               .vsync_end = 480 + 16 + 14,
+               .vtotal = 480 + 16 + 14 + 30,
+               //.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
+       },
 };
 
-static const struct panel_desc wisecoco_jt035ips02 = {                                                              
-       .modes = wisecoco_jt035ips02_modes,                                                                          
-       .num_modes = ARRAY_SIZE(wisecoco_jt035ips02_modes),                                                          
-       .bpc = 8,                                                                                                    
-       .size = {                                                                                                    
-               .width = 70,                                                                                         
-               .height = 52,                                                                                        
-       },                                                                                                           
-       .bus_format = MEDIA_BUS_FMT_RGB888_1X24,                                                                     
-       .bus_flags = DRM_BUS_FLAG_DE_HIGH,  // | DRM_BUS_FLAG_PIXDATA_SAMPLE_NEGEDGE,                                
-       .connector_type = DRM_MODE_CONNECTOR_DPI,                                                                    
-};                        
+static const struct panel_desc wisecoco_jt035ips02 = {
+       .modes = wisecoco_jt035ips02_modes,
+       .num_modes = ARRAY_SIZE(wisecoco_jt035ips02_modes),
+       .bpc = 8,
+       .size = {
+               .width = 70,
+               .height = 52,
+       },
+       .bus_format = MEDIA_BUS_FMT_RGB888_1X24,
+       .bus_flags = DRM_BUS_FLAG_DE_HIGH, DRM_BUS_FLAG_PIXDATA_SAMPLE_NEGEDGE,
+       .connector_type = DRM_MODE_CONNECTOR_DPI,
+};
 
 static const struct drm_display_mode friendlyarm_hd702e_mode = {
 	.clock		= 67185,
@@ -4093,9 +4093,9 @@ static const struct of_device_id platform_of_match[] = {
 	}, {
 		.compatible = "frida,frd350h54004",
 		.data = &frida_frd350h54004,
-        }, {                                                                                                        
-               .compatible = "wisecoco,jt035ips02",                                                                 
-               .data = &wisecoco_jt035ips02,                                                                        
+        }, {
+               .compatible = "wisecoco,jt035ips02",
+               .data = &wisecoco_jt035ips02,
 	}, {
 		.compatible = "friendlyarm,hd702e",
 		.data = &friendlyarm_hd702e,
